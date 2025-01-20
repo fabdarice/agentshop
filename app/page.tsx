@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 export default function Home() {
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'bot', content: string }>>([
@@ -15,15 +16,15 @@ export default function Home() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    
+
     setMessages(prev => [...prev, { type: 'user', content: input }]);
     setInput('');
-    
+
     // Simulate bot response
     setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        type: 'bot', 
-        content: 'I\'ll help you find that! Let me search through our catalog...' 
+      setMessages(prev => [...prev, {
+        type: 'bot',
+        content: 'I\'ll help you find that! Let me search through our catalog...'
       }]);
     }, 1000);
   };
@@ -37,9 +38,9 @@ export default function Home() {
             <ShoppingCart className="w-8 h-8" />
             <h1 className="text-3xl font-bold">AgentShop</h1>
           </div>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Sparkles className="w-4 h-4" />
-            <span>Powered by Coinbase Commerce</span>
+          <div className="flex items-start justify-center gap-2 text-md">
+            <Image src="./images/coinbase-wordmark.svg" alt="Coinbase Commerce" width={140} height={32} />
+            <h1 className="text-2xl font-bold">COMMERCE</h1>
           </div>
         </div>
 
@@ -50,16 +51,14 @@ export default function Home() {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`flex ${
-                    message.type === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
-                      message.type === 'user'
-                        ? 'bg-primary text-primary-foreground ml-auto'
-                        : 'bg-muted'
-                    }`}
+                    className={`max-w-[80%] p-3 rounded-2xl ${message.type === 'user'
+                      ? 'bg-primary text-primary-foreground ml-auto'
+                      : 'bg-muted'
+                      }`}
                   >
                     {message.type === 'bot' && (
                       <Bot className="w-5 h-5 mb-2" />
