@@ -65,6 +65,7 @@ export default function Home() {
 
       // Process each returned message
       const newMessages = data.messages.map((m: any) => {
+        if (m.content === "") return;
         if (m.role === "assistant" || m.role === "system") {
           return {
             type: "bot",
@@ -116,7 +117,7 @@ export default function Home() {
         <Card className="bg-white rounded-xl shadow-lg p-4 mb-4">
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
-              {messages.map((message, index) => (
+              {messages.filter((m) => m.content != "").map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.type === "user" ? "justify-end" : "justify-start"
@@ -137,7 +138,15 @@ export default function Home() {
                           img: ({ node, ...props }) => (
                             <img {...props} style={{ maxWidth: "200px" }} alt={props.alt} />
                           ),
-                          hr: ({ node, ...props }) => (<hr {...props} style={{ marginTop: "20px", marginBottom: "20px" }} />)
+                          hr: ({ node, ...props }) => (<hr {...props} style={{ marginTop: "20px", marginBottom: "20px" }} />),
+                          a: ({ node, ...props }) => (
+                            <a
+                              {...props}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline"
+                            />
+                          ),
                         }}>
                         {message.content}
                       </ReactMarkdown>
@@ -178,7 +187,7 @@ export default function Home() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Ask me anything about shopping..."
+            placeholder="Tell me about what product you want to buy..."
             className="rounded-xl"
           />
           <Button disabled={loading} onClick={handleSend} className="rounded-xl">
