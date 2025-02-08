@@ -74,3 +74,11 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+@keyframes blink {
+  0%, 20%, 50%, 80%, 100% {
+    opacity: 0.2;
+  }
+  30%, 60%, 90% {
+    opacity: 1;
+  }
+}

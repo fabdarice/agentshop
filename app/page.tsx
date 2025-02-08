@@ -1,24 +1,20 @@
 "use client";
 
 import { Bot, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
+import ReactMarkdown from 'react-markdown';
+
 
 export default function Home() {
   // messages: keeps track of all chat messages
   const [messages, setMessages] = useState<
     Array<{ type: "user" | "bot"; content: string }>
-  >([
-    {
-      type: "bot",
-      content:
-        "Hi! I'm ShopBot 🤖 I can help you find and purchase anything you need. What are you looking for today?",
-    },
-  ]);
+  >([]);
 
   // Keep track of user input
   const [input, setInput] = useState("");
@@ -27,10 +23,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   // Store an optional session ID from the backend
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string>("");
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Whenever messages update, scroll to the bottom.
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
+    console.log("Component mounted");
+    handleSend();
+  }, [])
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    // if (!input.trim()) return;
 
     // Append the user's message to the conversation locally
     setMessages((prev) => [...prev, { type: "user", content: input }]);
@@ -123,20 +131,45 @@ export default function Home() {
                     {message.type === "bot" && (
                       <Bot className="w-5 h-5 mb-2" />
                     )}
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm">
+                      <ReactMarkdown
+                        components={{
+                          img: ({ node, ...props }) => (
+                            <img {...props} style={{ maxWidth: "200px" }} alt={props.alt} />
+                          ),
+                          hr: ({ node, ...props }) => (<hr {...props} style={{ marginTop: "20px", marginBottom: "20px" }} />)
+                        }}>
+                        {message.content}
+                      </ReactMarkdown>
+                    </p>
                   </div>
                 </div>
               ))}
+
+              {/* Loading Indicator */}
+              {loading && (
+                <div className="mb-2 flex justify-center items-center">
+                  <div className="flex space-x-1">
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full"
+                      style={{ animation: "blink 1.4s infinite both", animationDelay: "0s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full"
+                      style={{ animation: "blink 1.4s infinite both", animationDelay: "0.2s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full"
+                      style={{ animation: "blink 1.4s infinite both", animationDelay: "0.4s" }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
         </Card>
 
-        {/* Loading Indicator */}
-        {loading && (
-          <div className="mb-2 text-center text-sm text-gray-500">
-            Thinking...
-          </div>
-        )}
 
         {/* Input Area */}
         <div className="flex gap-2">
