@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
+let hasInitialized = false;
 
 export default function Home() {
   // messages: keeps track of all chat messages
@@ -34,7 +36,10 @@ export default function Home() {
 
   useEffect(() => {
     console.log("Component mounted");
-    handleSend();
+    if (!hasInitialized) {
+      hasInitialized = true;
+      handleSend();
+    }
   }, [])
 
   const handleSend = async () => {
@@ -100,7 +105,7 @@ export default function Home() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 text-primary mb-2">
             <ShoppingCart className="w-8 h-8" />
-            <h1 className="text-3xl font-bold">AgentShop</h1>
+            <h1 className="text-3xl font-bold">Shop Pal</h1>
           </div>
           <div className="flex items-start justify-center gap-2 text-md">
             <Image
@@ -114,7 +119,7 @@ export default function Home() {
         </div>
 
         {/* Chat Interface */}
-        <Card className="bg-white rounded-xl shadow-lg p-4 mb-4">
+        <Card className="bg-secondary rounded-xl shadow-lg p-4 mb-4">
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
               {messages.filter((m) => m.content != "").map((message, index) => (
@@ -126,7 +131,7 @@ export default function Home() {
                   <div
                     className={`max-w-[80%] p-3 rounded-2xl ${message.type === "user"
                       ? "bg-primary text-primary-foreground ml-auto"
-                      : "bg-muted"
+                      : "bg-white"
                       }`}
                   >
                     {message.type === "bot" && (
@@ -134,6 +139,7 @@ export default function Home() {
                     )}
                     <p className="text-sm">
                       <ReactMarkdown
+                        rehypePlugins={[rehypeRaw]}
                         components={{
                           img: ({ node, ...props }) => (
                             <img {...props} style={{ maxWidth: "200px" }} alt={props.alt} />
